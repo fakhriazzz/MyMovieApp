@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
         borderRadius: RFValue(18),
         padding: RFValue(8),
         paddingHorizontal: RFValue(12),
-        marginHorizontal: RFValue(24)
+        marginHorizontal: RFValue(24),
+        color: colors.black
     }
 })
