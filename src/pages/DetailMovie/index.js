@@ -4,7 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { useSelector } from 'react-redux'
 import Api from '../../Api'
 import { IconStar } from '../../assets'
-import { Button, CardGenre, CardReview, Gap, HeaderBack } from '../../components'
+import { Button, CardCast, CardGenre, CardReview, Gap, HeaderBack } from '../../components'
 import { colors, fonts } from '../../utils'
 
 const DetailMovie = ({ navigation, route }) => {
@@ -13,6 +13,7 @@ const DetailMovie = ({ navigation, route }) => {
 
   const [detailmovie, setdetailmovie] = useState([])
   const [review, setreview] = useState([])
+  const [credit, setcredit] = useState([])
 
   const getDetailMovie = async () => {
     try {
@@ -27,7 +28,15 @@ const DetailMovie = ({ navigation, route }) => {
     try {
       const response = await Api.review(globalState.token, id)
       setreview(response.data.results)
-      console.log(response.data.results);
+    } catch (error) {
+
+    }
+  }
+
+  const getCast = async () => {
+    try {
+      const response = await Api.credits(globalState.token, id)
+      setcredit(response.data.cast)
     } catch (error) {
 
     }
@@ -40,6 +49,7 @@ const DetailMovie = ({ navigation, route }) => {
   useEffect(() => {
     getDetailMovie()
     getReview()
+    getCast()
   }, [])
 
   return (
@@ -58,16 +68,36 @@ const DetailMovie = ({ navigation, route }) => {
               </View>
             </View>
             <Gap height={RFValue(8)} />
-            <View style={{ flexDirection: 'row' }}>
-              {
-                detailmovie.genres?.map(data => {
-                  return <CardGenre key={data.id} label={data.name} />
-                })
-              }
+            <View style={{ flexDirection: 'row', marginRight: RFValue(-24) }}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              >
+                {
+                  detailmovie.genres?.map(data => {
+                    return <CardGenre key={data.id} label={data.name} />
+                  })
+                }
+              </ScrollView>
             </View>
             <Gap height={RFValue(8)} />
             <Text style={styles.text2}>{detailmovie.overview}</Text>
+            <Gap height={RFValue(24)} />
+            <Text style={styles.text}>Top Cast</Text>
             <Gap height={RFValue(8)} />
+            <View style={{ flexDirection: 'row', marginRight: RFValue(-24) }}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              >
+                {
+                  credit.map(data => {
+                    return <CardCast key={data.id} imageUri={data.profile_path} original_name={data.original_name} character={data.character} />
+                  })
+                }
+              </ScrollView>
+            </View>
+            <Gap height={RFValue(24)} />
             <Text style={styles.text}>Review</Text>
             <Gap height={RFValue(8)} />
             {

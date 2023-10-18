@@ -65,6 +65,16 @@ class Api {
         })
     }
 
+    static credits(token, id) {
+        let path = `${id}/credits`;
+        return request(`${this.urlAPI()}${path}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+    }
+
     static search(token, title) {
         let path = `https://api.themoviedb.org/3/search/movie?query=${title}&include_adult=false&language=en-US&page=1`;
         return request(`${path}`, {

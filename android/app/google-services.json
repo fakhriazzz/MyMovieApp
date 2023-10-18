@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1041144219909",
+    "firebase_url": "https://movieapp-a9d09-default-rtdb.firebaseio.com",
     "project_id": "movieapp-a9d09",
     "storage_bucket": "movieapp-a9d09.appspot.com"
   },

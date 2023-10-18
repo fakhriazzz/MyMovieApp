@@ -6,6 +6,7 @@ import Button from "./Button";
 import Loading from "./Loading";
 import CardReview from "./CardReview";
 import Input from "./Input";
+import CardCast from "./CardCast";
 
 export {
     CardNowPlaying,
@@ -15,5 +16,6 @@ export {
     Button,
     Loading,
     CardReview,
-    Input
+    Input,
+    CardCast
 };

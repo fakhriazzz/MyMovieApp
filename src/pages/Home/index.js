@@ -24,7 +24,7 @@ const Home = ({ navigation }) => {
             const response = await Api.nowplaying(globalState.token)
             setnowplay(response.data.results);
         } catch (error) {
-            console.log(error);
+            
         }
     }
 
@@ -33,7 +33,7 @@ const Home = ({ navigation }) => {
             const response = await Api.popular(globalState.token)
             setpopular(response.data.results);
         } catch (error) {
-            console.log(error);
+            
         }
     }
 
@@ -42,7 +42,7 @@ const Home = ({ navigation }) => {
             const response = await Api.toprated(globalState.token)
             settoprated(response.data.results);
         } catch (error) {
-            console.log(error);
+            
         }
     }
 
@@ -51,7 +51,7 @@ const Home = ({ navigation }) => {
             const response = await Api.upcoming(globalState.token)
             setUpcoming(response.data.results);
         } catch (error) {
-            console.log(error);
+            
         }
     }
 
@@ -69,7 +69,6 @@ const Home = ({ navigation }) => {
                                 user: data[key],
                             })
                         })
-                        console.log(user[0].user, 'data');
                         setUser(user[0].user)
                         setloading(false)
                     }
