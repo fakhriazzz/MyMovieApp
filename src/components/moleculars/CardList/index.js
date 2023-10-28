@@ -16,7 +16,7 @@ const CardList = ({ onPress, title, rating, imageUri }) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <IconStar />
                     <Gap width={RFValue(4)} />
-                    <Text style={styles.text2}>{rating}</Text>
+                    <Text style={styles.text2}>{Math.round(rating * 10) / 10}</Text>
                 </View>
             </View>
         </TouchableOpacity>

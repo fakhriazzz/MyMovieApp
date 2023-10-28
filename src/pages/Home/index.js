@@ -2,78 +2,81 @@ import auth from '@react-native-firebase/auth'
 import database from '@react-native-firebase/database'
 import React, { useEffect, useState } from 'react'
 import { Alert, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import MMKVStorage from 'react-native-mmkv-storage'
 import { RFValue } from 'react-native-responsive-fontsize'
+import { useQuery } from 'react-query'
 import { useSelector } from 'react-redux'
 import Api from '../../Api'
 import { IconLogout } from '../../assets'
-import { CardList, CardNowPlaying, Gap, Loading } from '../../components'
-import { colors, fonts, getData, removeData } from '../../utils'
+import { CardList, CardNowPlaying, Gap } from '../../components'
+import { colors, fonts } from '../../utils'
 
 const Home = ({ navigation }) => {
+    const storage = new MMKVStorage.Loader().initialize();
+    const email = storage.getString('email');
     const globalState = useSelector((state) => state)
-    const [nowplay, setnowplay] = useState([])
-    const [popular, setpopular] = useState([])
-    const [toprated, settoprated] = useState([])
-    const [upcoming, setUpcoming] = useState([])
     const [user, setUser] = useState([])
-    const [loading, setloading] = useState(true)
 
     const getNowPlaying = async () => {
-        setloading(true)
-        try {
-            const response = await Api.nowplaying(globalState.token)
-            setnowplay(response.data.results);
-        } catch (error) {
-            
-        }
+        const response = await Api.nowplaying(globalState.token)
+        return response.data.results;
     }
 
     const getPopular = async () => {
-        try {
-            const response = await Api.popular(globalState.token)
-            setpopular(response.data.results);
-        } catch (error) {
-            
-        }
+        const response = await Api.popular(globalState.token)
+        return response.data.results;
     }
 
     const getTopRated = async () => {
-        try {
-            const response = await Api.toprated(globalState.token)
-            settoprated(response.data.results);
-        } catch (error) {
-            
-        }
+        const response = await Api.toprated(globalState.token)
+        return response.data.results;
     }
 
     const getUpcoming = async () => {
-        try {
-            const response = await Api.upcoming(globalState.token)
-            setUpcoming(response.data.results);
-        } catch (error) {
-            
-        }
+        const response = await Api.upcoming(globalState.token)
+        return response.data.results;
     }
 
+    const {
+        data,
+        error,
+        isLoading,
+    } = useQuery("nowPlay", getNowPlaying);
+
+    const {
+        data: dataPopular,
+        error: errorPupolar,
+        isLoading: isLoadingPopular,
+    } = useQuery("popular", getPopular);
+
+    const {
+        data: dataTopRated,
+        error: errorTopRated,
+        isLoading: isLoadingTopRated,
+    } = useQuery("toprated", getTopRated);
+
+    const {
+        data: dataUpcoming,
+        error: errorUpcoming,
+        isLoading: isLoadingUpcoming,
+    } = useQuery("upcoming", getUpcoming);
+
     const getUser = () => {
-        getData('user').then(data => {
-            database()
-                .ref(`users/${data.email}`)
-                .on('value', res => {
-                    const data = res.val();
-                    if (data != null) {
-                        let user = [];
-                        Object.keys(data).map(key => {
-                            user.push({
-                                id: key,
-                                user: data[key],
-                            })
+        database()
+            .ref(`users/${email}`)
+            .on('value', res => {
+                const data = res.val();
+                if (data != null) {
+                    let user = [];
+                    Object.keys(data).map(key => {
+                        user.push({
+                            id: key,
+                            user: data[key],
                         })
-                        setUser(user[0].user)
-                        setloading(false)
-                    }
-                })
-        })
+                    })
+                    setUser(user[0].user)
+                }
+            })
     }
 
     const logout = () => {
@@ -82,7 +85,7 @@ const Home = ({ navigation }) => {
                 .signOut()
                 .then(() => {
                     navigation.replace('Sign')
-                    removeData('user')
+                    storage.clearStore()
                     Alert.alert('Logout success');
                 });
         } catch (error) {
@@ -135,104 +138,121 @@ const Home = ({ navigation }) => {
     }
 
     useEffect(() => {
-        getNowPlaying()
-        getPopular()
-        getTopRated()
-        getUpcoming()
         getUser()
     }, [])
 
     return (
-        <>
-            <View style={styles.container}>
-                <View style={styles.contentTop}>
-                    <View>
-                        <Text style={styles.text}>Welcome, {user?.name}</Text>
-                        <Gap height={RFValue(2)} />
-                        <Text style={styles.text2}>Find your favorite movie</Text>
-                    </View>
-                    <TouchableOpacity onPress={logout}>
-                        <IconLogout />
-                    </TouchableOpacity>
+        <View style={styles.container}>
+            <View style={styles.contentTop}>
+                <View>
+                    <Text style={styles.text}>Welcome, {user?.name}</Text>
+                    <Gap height={RFValue(2)} />
+                    <Text style={styles.text2}>Find your favorite movie</Text>
                 </View>
-                <TouchableOpacity style={styles.btnSeacrh} onPress={() => navigation.navigate('Search')}>
-                    <Text style={styles.text2}>Search movie</Text>
+                <TouchableOpacity onPress={logout}>
+                    <IconLogout />
                 </TouchableOpacity>
-                <View style={styles.container}>
-                    <ScrollView>
-                        <View>
-                            <Gap height={RFValue(12)} />
-                            <View style={styles.flexrow}>
-                                <Text style={styles.text3}>Now Playing</Text>
-                                <TouchableOpacity onPress={() => gotoSeeMore('nowplaying')}>
-                                    <Text style={styles.text2}>See More</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Gap height={RFValue(12)} />
-                            <FlatList
-                                data={nowplay.slice(0, 5)}
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                renderItem={({ item }) => <ItemNowPlay item={item} />}
-                                keyExtractor={item => item.id}
-                            />
-                        </View>
-                        <Gap height={RFValue(24)} />
-                        <View>
-                            <View style={styles.flexrow}>
-                                <Text style={styles.text3}>Popular</Text>
-                                <TouchableOpacity onPress={() => gotoSeeMore('popular')}>
-                                    <Text style={styles.text2}>See More</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Gap height={RFValue(12)} />
-                            <FlatList
-                                data={popular.slice(0, 5)}
-                                showsVerticalScrollIndicator={false}
-                                initialNumToRender={2}
-                                renderItem={({ item }) => <ItemPopular item={item} />}
-                                keyExtractor={item => item.id}
-                            />
-                        </View>
-                        <Gap height={RFValue(24)} />
-                        <View>
-                            <View style={styles.flexrow}>
-                                <Text style={styles.text3}>Top Rated</Text>
-                                <TouchableOpacity onPress={() => gotoSeeMore('toprated')}>
-                                    <Text style={styles.text2}>See More</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Gap height={RFValue(12)} />
-                            <FlatList
-                                data={toprated.slice(0, 5)}
-                                showsVerticalScrollIndicator={false}
-                                initialNumToRender={2}
-                                renderItem={({ item }) => <ItemTopRated item={item} />}
-                                keyExtractor={item => item.id}
-                            />
-                        </View>
-                        <Gap height={RFValue(24)} />
-                        <View>
-                            <View style={styles.flexrow}>
-                                <Text style={styles.text3}>Upcoming</Text>
-                                <TouchableOpacity onPress={() => gotoSeeMore('upcoming')}>
-                                    <Text style={styles.text2}>See More</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Gap height={RFValue(12)} />
-                            <FlatList
-                                data={upcoming.slice(0, 5)}
-                                showsVerticalScrollIndicator={false}
-                                initialNumToRender={2}
-                                renderItem={({ item }) => <ItemUpcoming item={item} />}
-                                keyExtractor={item => item.id}
-                            />
-                        </View>
-                    </ScrollView>
-                </View>
             </View>
-            {loading && <Loading />}
-        </>
+            <TouchableOpacity style={styles.btnSeacrh} onPress={() => navigation.navigate('Search')}>
+                <Text style={styles.text2}>Search movie</Text>
+            </TouchableOpacity>
+            <View style={styles.container}>
+                <ScrollView>
+                    {
+                        isLoading ?
+                            <View>
+                                <Text>Loading</Text>
+                            </View> :
+                            <View>
+                                <Gap height={RFValue(12)} />
+                                <View style={styles.flexrow}>
+                                    <Text style={styles.text3}>Now Playing</Text>
+                                    <TouchableOpacity onPress={() => gotoSeeMore('nowplaying')}>
+                                        <Text style={styles.text2}>See More</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Gap height={RFValue(12)} />
+                                <FlatList
+                                    data={data?.slice(0, 5)}
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    renderItem={({ item }) => <ItemNowPlay item={item} />}
+                                    keyExtractor={item => item.id}
+                                />
+                            </View>
+                    }
+                    <Gap height={RFValue(24)} />
+                    {
+                        isLoadingPopular ?
+                            <View>
+                                <Text>Loading</Text>
+                            </View> :
+                            <View>
+                                <View style={styles.flexrow}>
+                                    <Text style={styles.text3}>Popular</Text>
+                                    <TouchableOpacity onPress={() => gotoSeeMore('popular')}>
+                                        <Text style={styles.text2}>See More</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Gap height={RFValue(12)} />
+                                <FlatList
+                                    data={dataPopular?.slice(0, 5)}
+                                    showsVerticalScrollIndicator={false}
+                                    initialNumToRender={2}
+                                    renderItem={({ item }) => <ItemPopular item={item} />}
+                                    keyExtractor={item => item.id}
+                                />
+                            </View>
+                    }
+                    <Gap height={RFValue(24)} />
+                    {
+                        isLoadingTopRated ?
+                            <View>
+                                <Text>Loading</Text>
+                            </View> :
+                            <View>
+                                <View style={styles.flexrow}>
+                                    <Text style={styles.text3}>Top Rated</Text>
+                                    <TouchableOpacity onPress={() => gotoSeeMore('toprated')}>
+                                        <Text style={styles.text2}>See More</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Gap height={RFValue(12)} />
+                                <FlatList
+                                    data={dataTopRated?.slice(0, 5)}
+                                    showsVerticalScrollIndicator={false}
+                                    initialNumToRender={2}
+                                    renderItem={({ item }) => <ItemTopRated item={item} />}
+                                    keyExtractor={item => item.id}
+                                />
+                            </View>
+                    }
+                    <Gap height={RFValue(24)} />
+                    {
+                        isLoadingUpcoming ?
+                            <View>
+                                <Text>Loading</Text>
+                            </View> :
+                            <View>
+                                <View style={styles.flexrow}>
+                                    <Text style={styles.text3}>Upcoming</Text>
+                                    <TouchableOpacity onPress={() => gotoSeeMore('upcoming')}>
+                                        <Text style={styles.text2}>See More</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Gap height={RFValue(12)} />
+                                <FlatList
+                                    data={dataUpcoming?.slice(0, 5)}
+                                    showsVerticalScrollIndicator={false}
+                                    initialNumToRender={2}
+                                    renderItem={({ item }) => <ItemUpcoming item={item} />}
+                                    keyExtractor={item => item.id}
+                                />
+                            </View>
+                    }
+                </ScrollView>
+            </View>
+        </View>
     )
 }
 

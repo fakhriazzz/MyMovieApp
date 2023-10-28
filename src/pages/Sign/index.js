@@ -4,8 +4,11 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { Button, Gap, Input } from '../../components'
 import { colors, fonts, storeData } from '../../utils'
+import MMKVStorage from 'react-native-mmkv-storage'
 
 const Sign = ({ navigation }) => {
+    const storage = new MMKVStorage.Loader().initialize();
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setloading] = useState(false)
@@ -22,10 +25,8 @@ const Sign = ({ navigation }) => {
             auth()
                 .signInWithEmailAndPassword(email, password)
                 .then(() => {
-                    const data = {
-                        email: email.replace(/["@.]/g, ''),
-                    }
-                    storeData('user', data)
+                    storage.setString('email', email.replace(/["@.]/g, ''),);
+                    // storeData('user', data)
                     navigation.navigate('Home')
                     setloading(false)
                 })

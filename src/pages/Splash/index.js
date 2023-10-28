@@ -1,18 +1,20 @@
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
+import MMKVStorage from 'react-native-mmkv-storage'
 import { RFValue } from 'react-native-responsive-fontsize'
-import { colors, fonts, getData } from '../../utils'
+import { colors, fonts } from '../../utils'
 
 const Splash = ({ navigation }) => {
+  const storage = new MMKVStorage.Loader().initialize();
+  const email = storage.getString('email');
+
   useEffect(() => {
     setTimeout(() => {
-      getData('user').then(res => {
-        if (res) {
-          navigation.replace('Home')
-        } else {
-          navigation.replace('Sign')
-        }
-      })
+      if (email) {
+        navigation.replace('Home')
+      } else {
+        navigation.replace('Sign')
+      }
     }, 3000);
   }, [])
 

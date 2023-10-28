@@ -64,7 +64,7 @@ const DetailMovie = ({ navigation, route }) => {
               <View style={styles.flexrow}>
                 <IconStar />
                 <Gap width={RFValue(4)} />
-                <Text style={styles.text}>{detailmovie.vote_average}</Text>
+                <Text style={styles.text}>{Math.round(detailmovie.vote_average * 10) / 10}</Text>
               </View>
             </View>
             <Gap height={RFValue(8)} />

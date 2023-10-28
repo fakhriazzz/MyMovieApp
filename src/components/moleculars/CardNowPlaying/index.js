@@ -16,7 +16,7 @@ const CardNowPlaying = ({ title, rating, imageUri, onPress }) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <IconStar />
                     <Gap width={RFValue(4)} />
-                    <Text style={styles.text}>{rating}</Text>
+                    <Text style={styles.text}>{Math.round(rating * 10) / 10}</Text>
                 </View>
             </View>
         </TouchableOpacity>
