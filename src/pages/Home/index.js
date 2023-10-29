@@ -8,7 +8,7 @@ import { useQuery } from 'react-query'
 import { useSelector } from 'react-redux'
 import Api from '../../Api'
 import { IconLogout } from '../../assets'
-import { CardList, CardNowPlaying, Gap } from '../../components'
+import { CardList, CardNowPlaying, Gap, Shimmer } from '../../components'
 import { colors, fonts } from '../../utils'
 
 const Home = ({ navigation }) => {
@@ -38,9 +38,9 @@ const Home = ({ navigation }) => {
     }
 
     const {
-        data,
-        error,
-        isLoading,
+        data: dataNowPlay,
+        error: errorNowPlay,
+        isLoading: isLoadingNowPlay,
     } = useQuery("nowPlay", getNowPlaying);
 
     const {
@@ -113,25 +113,25 @@ const Home = ({ navigation }) => {
         if (type == 'nowplaying') {
             const data = {
                 label: 'Now Playing',
-                dataMovie: nowplay,
+                dataMovie: dataNowPlay,
             }
             navigation.navigate('MoreMovie', data)
         } else if (type == 'popular') {
             const data = {
                 label: 'Popular',
-                dataMovie: popular,
+                dataMovie: dataPopular,
             }
             navigation.navigate('MoreMovie', data)
         } else if (type == 'toprated') {
             const data = {
                 label: 'Top Rated',
-                dataMovie: toprated,
+                dataMovie: dataTopRated,
             }
             navigation.navigate('MoreMovie', data)
         } else {
             const data = {
                 label: 'Upcoming',
-                dataMovie: upcoming,
+                dataMovie: dataUpcoming,
             }
             navigation.navigate('MoreMovie', data)
         }
@@ -159,10 +159,8 @@ const Home = ({ navigation }) => {
             <View style={styles.container}>
                 <ScrollView>
                     {
-                        isLoading ?
-                            <View>
-                                <Text>Loading</Text>
-                            </View> :
+                        isLoadingNowPlay ?
+                            <Shimmer type='card' /> :
                             <View>
                                 <Gap height={RFValue(12)} />
                                 <View style={styles.flexrow}>
@@ -173,7 +171,7 @@ const Home = ({ navigation }) => {
                                 </View>
                                 <Gap height={RFValue(12)} />
                                 <FlatList
-                                    data={data?.slice(0, 5)}
+                                    data={dataNowPlay?.slice(0, 5)}
                                     horizontal
                                     showsHorizontalScrollIndicator={false}
                                     renderItem={({ item }) => <ItemNowPlay item={item} />}

@@ -43,5 +43,8 @@ const styles = StyleSheet.create({
     },
     container: {
         marginLeft: RFValue(14)
+    },
+    borderShimmer: {
+        borderRadius: RFValue(12)
     }
 })

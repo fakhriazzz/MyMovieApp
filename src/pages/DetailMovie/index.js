@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Image, Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, Image, Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { RFValue } from 'react-native-responsive-fontsize'
+import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder'
 import { useSelector } from 'react-redux'
 import Api from '../../Api'
 import { IconStar } from '../../assets'
 import { Button, CardCast, CardGenre, CardReview, Gap, HeaderBack } from '../../components'
 import { colors, fonts } from '../../utils'
+
+const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient)
+const width = Dimensions.get('window').width
 
 const DetailMovie = ({ navigation, route }) => {
   const { id } = route.params;
@@ -14,9 +19,11 @@ const DetailMovie = ({ navigation, route }) => {
   const [detailmovie, setdetailmovie] = useState([])
   const [review, setreview] = useState([])
   const [credit, setcredit] = useState([])
+  const [loading, setloading] = useState(true)
 
   const getDetailMovie = async () => {
     try {
+      setloading(true)
       const response = await Api.detailmovie(globalState.token, id)
       setdetailmovie(response.data)
     } catch (error) {
@@ -35,6 +42,7 @@ const DetailMovie = ({ navigation, route }) => {
 
   const getCast = async () => {
     try {
+      setloading(false)
       const response = await Api.credits(globalState.token, id)
       setcredit(response.data.cast)
     } catch (error) {
@@ -57,7 +65,9 @@ const DetailMovie = ({ navigation, route }) => {
       <HeaderBack label='Detail Movie' onPress={() => navigation.goBack()} />
       <View style={styles.container}>
         <ScrollView>
-          <Image style={styles.image} source={{ uri: `https://image.tmdb.org/t/p/w500/${detailmovie.poster_path}` }} />
+          <ShimmerPlaceholder visible={!loading} style={styles.image}>
+            <Image style={styles.image} source={{ uri: `https://image.tmdb.org/t/p/w500/${detailmovie.poster_path}` }} />
+          </ShimmerPlaceholder>
           <View style={{ padding: RFValue(24), flex: 1 }}>
             <View style={[styles.flexrow, { justifyContent: 'space-between' }]}>
               <Text style={[styles.text, { maxWidth: RFValue(260) }]}>{detailmovie.title}</Text>
@@ -121,7 +131,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white
   },
   image: {
-    height: RFValue(264)
+    height: RFValue(264),
+    width: RFValue(width)
   },
   flexrow: {
     flexDirection: 'row',

@@ -7,6 +7,7 @@ import Loading from "./Loading";
 import CardReview from "./CardReview";
 import Input from "./Input";
 import CardCast from "./CardCast";
+import Shimmer from "./Shimmer";
 
 export {
     CardNowPlaying,
@@ -17,5 +18,6 @@ export {
     Loading,
     CardReview,
     Input,
-    CardCast
+    CardCast,
+    Shimmer
 };
