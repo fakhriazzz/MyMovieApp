@@ -42,9 +42,9 @@ const DetailMovie = ({ navigation, route }) => {
 
   const getCast = async () => {
     try {
-      setloading(false)
       const response = await Api.credits(globalState.token, id)
       setcredit(response.data.cast)
+      setloading(false)
     } catch (error) {
 
     }
@@ -65,9 +65,12 @@ const DetailMovie = ({ navigation, route }) => {
       <HeaderBack label='Detail Movie' onPress={() => navigation.goBack()} />
       <View style={styles.container}>
         <ScrollView>
-          <ShimmerPlaceholder visible={!loading} style={styles.image}>
-            <Image style={styles.image} source={{ uri: `https://image.tmdb.org/t/p/w500/${detailmovie.poster_path}` }} />
-          </ShimmerPlaceholder>
+          {
+            loading ?
+              <ShimmerPlaceholder style={styles.image} />
+              :
+              <Image style={styles.image} source={{ uri: `https://image.tmdb.org/t/p/w500/${detailmovie.poster_path}` }} />
+          }
           <View style={{ padding: RFValue(24), flex: 1 }}>
             <View style={[styles.flexrow, { justifyContent: 'space-between' }]}>
               <Text style={[styles.text, { maxWidth: RFValue(260) }]}>{detailmovie.title}</Text>
