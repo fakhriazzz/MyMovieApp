@@ -160,7 +160,18 @@ const Home = ({ navigation }) => {
                 <ScrollView>
                     {
                         isLoadingNowPlay ?
-                            <Shimmer type='card' /> :
+                            <View>
+                                <Gap height={RFValue(12)} />
+                                <View style={styles.flexrow}>
+                                    <Text style={styles.text3}>Now Playing</Text>
+                                    <TouchableOpacity onPress={() => gotoSeeMore('nowplaying')}>
+                                        <Text style={styles.text2}>See More</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Gap height={RFValue(12)} />
+                                <Shimmer marginLeft={RFValue(24)} marginTop={RFValue(24)} height={RFValue(162)} width={RFValue(212)} radius={RFValue(12)} />
+                            </View>
+                            :
                             <View>
                                 <Gap height={RFValue(12)} />
                                 <View style={styles.flexrow}>
@@ -183,8 +194,16 @@ const Home = ({ navigation }) => {
                     {
                         isLoadingPopular ?
                             <View>
-                                <Text>Loading</Text>
-                            </View> :
+                                <View style={styles.flexrow}>
+                                    <Text style={styles.text3}>Popular</Text>
+                                    <TouchableOpacity onPress={() => gotoSeeMore('popular')}>
+                                        <Text style={styles.text2}>See More</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Gap height={RFValue(12)} />
+                                <Shimmer marginLeft={RFValue(24)} marginRight={RFValue(24)} marginBottom={RFValue(12)} width={RFValue(200)} height={RFValue(56)} radius={RFValue(12)} />
+                            </View>
+                            :
                             <View>
                                 <View style={styles.flexrow}>
                                     <Text style={styles.text3}>Popular</Text>
@@ -206,8 +225,16 @@ const Home = ({ navigation }) => {
                     {
                         isLoadingTopRated ?
                             <View>
-                                <Text>Loading</Text>
-                            </View> :
+                                <View style={styles.flexrow}>
+                                    <Text style={styles.text3}>Top Rated</Text>
+                                    <TouchableOpacity onPress={() => gotoSeeMore('toprated')}>
+                                        <Text style={styles.text2}>See More</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Gap height={RFValue(12)} />
+                                <Shimmer marginLeft={RFValue(24)} marginRight={RFValue(24)} marginBottom={RFValue(12)} width={RFValue(200)} height={RFValue(56)} radius={RFValue(12)} />
+                            </View>
+                            :
                             <View>
                                 <View style={styles.flexrow}>
                                     <Text style={styles.text3}>Top Rated</Text>
@@ -229,8 +256,16 @@ const Home = ({ navigation }) => {
                     {
                         isLoadingUpcoming ?
                             <View>
-                                <Text>Loading</Text>
-                            </View> :
+                                <View style={styles.flexrow}>
+                                    <Text style={styles.text3}>Upcoming</Text>
+                                    <TouchableOpacity onPress={() => gotoSeeMore('upcoming')}>
+                                        <Text style={styles.text2}>See More</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Gap height={RFValue(12)} />
+                                <Shimmer marginLeft={RFValue(24)} marginRight={RFValue(24)} marginBottom={RFValue(12)} width={RFValue(200)} height={RFValue(56)} radius={RFValue(12)} />
+                            </View>
+                            :
                             <View>
                                 <View style={styles.flexrow}>
                                     <Text style={styles.text3}>Upcoming</Text>
